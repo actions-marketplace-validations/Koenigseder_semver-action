@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
-import { ReleaseType } from "./types";
+import { BgColor, Color, RCS, ReleaseType, Style } from "./types";
 
 const githubToken: string = core.getInput("github-token", { required: true });
 const baseBranch: string = core.getInput("base-branch");
@@ -94,11 +94,15 @@ async function main() {
 
   const releaseType: ReleaseType | null = await getReleaseType();
   if (!releaseType) {
-    console.log("No valid label set!");
+    console.log(`${Color.Red}No valid label set!${RCS}`);
+    console.log(
+      `${Style.Bold}Set one of those labels in order to create a new release:${RCS}\n- Major release: ${BgColor.Red}${Color.Black}${Style.Bold}${majorReleaseTag}${RCS}\n- Minor release: ${BgColor.Yellow}${Color.Black}${Style.Bold}${minorReleaseTag}${RCS}\n- Patch release: ${BgColor.Cyan}${Color.Black}${Style.Bold}${patchReleaseTag}${RCS}`
+    );
     return;
   }
 
   const latestReleaseTag: string | null = await getLatestReleaseTag();
+  console.log(`Last release: ${latestReleaseTag}`);
 
   const nextReleaseTag: string | null = getNextReleaseTag(
     releaseType,
@@ -106,11 +110,13 @@ async function main() {
   );
 
   if (!nextReleaseTag) {
-    console.log("Cannot compute new release tag!");
+    console.log(`${Color.Red}Cannot compute new release tag!${RCS}`);
     return;
   }
 
   await createNewTagAndRelease(nextReleaseTag);
+
+  console.log(`${Color.Green}Created new release: ${nextReleaseTag}${RCS}`);
 
   core.setOutput("new-release-tag", nextReleaseTag);
 }

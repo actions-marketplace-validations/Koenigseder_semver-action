@@ -9739,16 +9739,19 @@ async function main() {
     core.setOutput("patch-release-tag", patchReleaseTag);
     const releaseType = await getReleaseType();
     if (!releaseType) {
-        console.log("No valid label set!");
+        console.log(`${types_1.Color.Red}No valid label set!${types_1.RCS}`);
+        console.log(`${types_1.Style.Bold}Set one of those labels in order to create a new release:${types_1.RCS}\n- Major release: ${types_1.BgColor.Red}${types_1.Color.Black}${types_1.Style.Bold}${majorReleaseTag}${types_1.RCS}\n- Minor release: ${types_1.BgColor.Yellow}${types_1.Color.Black}${types_1.Style.Bold}${minorReleaseTag}${types_1.RCS}\n- Patch release: ${types_1.BgColor.Cyan}${types_1.Color.Black}${types_1.Style.Bold}${patchReleaseTag}${types_1.RCS}`);
         return;
     }
     const latestReleaseTag = await getLatestReleaseTag();
+    console.log(`Last release: ${latestReleaseTag}`);
     const nextReleaseTag = getNextReleaseTag(releaseType, latestReleaseTag);
     if (!nextReleaseTag) {
-        console.log("Cannot compute new release tag!");
+        console.log(`${types_1.Color.Red}Cannot compute new release tag!${types_1.RCS}`);
         return;
     }
     await createNewTagAndRelease(nextReleaseTag);
+    console.log(`${types_1.Color.Green}Created new release: ${nextReleaseTag}${types_1.RCS}`);
     core.setOutput("new-release-tag", nextReleaseTag);
 }
 main();
@@ -9762,13 +9765,38 @@ main();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ReleaseType = void 0;
+exports.Style = exports.BgColor = exports.Color = exports.RCS = exports.ReleaseType = void 0;
+// Release types
 var ReleaseType;
 (function (ReleaseType) {
     ReleaseType["Major"] = "major";
     ReleaseType["Minor"] = "minor";
     ReleaseType["Patch"] = "patch";
 })(ReleaseType || (exports.ReleaseType = ReleaseType = {}));
+// Reset styles and colors
+exports.RCS = "\x1b[0m";
+// Colors
+var Color;
+(function (Color) {
+    Color["Red"] = "\u001B[31m";
+    Color["Green"] = "\u001B[32m";
+    Color["Yellow"] = "\u001B[33m";
+    Color["Cyan"] = "\u001B[36m";
+    Color["White"] = "\u001B[37m";
+    Color["Black"] = "\u001B[30m";
+})(Color || (exports.Color = Color = {}));
+var BgColor;
+(function (BgColor) {
+    BgColor["Red"] = "\u001B[41m";
+    BgColor["Yellow"] = "\u001B[43m";
+    BgColor["Cyan"] = "\u001B[46m";
+})(BgColor || (exports.BgColor = BgColor = {}));
+// Styles
+var Style;
+(function (Style) {
+    Style["Bold"] = "\u001B[1m";
+    Style["Italic"] = "\u001B[3m";
+})(Style || (exports.Style = Style = {}));
 
 
 /***/ }),
