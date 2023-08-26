@@ -6,9 +6,9 @@ const githubToken: string = core.getInput("github-token", { required: true });
 const baseBranch: string = core.getInput("base-branch");
 const semverPrefix: string = core.getInput("semver-prefix");
 const semverStartVersion: string = core.getInput("semver-start-version");
-const majorReleaseTag: string = core.getInput("major-release-tag");
-const minorReleaseTag: string = core.getInput("minor-release-tag");
-const patchReleaseTag: string = core.getInput("patch-release-tag");
+const majorReleaseLabel: string = core.getInput("major-release-label");
+const minorReleaseLabel: string = core.getInput("minor-release-label");
+const patchReleaseLabel: string = core.getInput("patch-release-label");
 
 const octokit = github.getOctokit(githubToken);
 const context = github.context;
@@ -23,11 +23,11 @@ async function getReleaseType(): Promise<ReleaseType | null> {
   for (const label of data) {
     const labelName: string = label.name;
 
-    if (labelName === majorReleaseTag) {
+    if (labelName === majorReleaseLabel) {
       return ReleaseType.Major;
-    } else if (labelName === minorReleaseTag) {
+    } else if (labelName === minorReleaseLabel) {
       return ReleaseType.Minor;
-    } else if (labelName === patchReleaseTag) {
+    } else if (labelName === patchReleaseLabel) {
       return ReleaseType.Patch;
     }
   }
@@ -88,15 +88,15 @@ async function createNewTagAndRelease(newTag: string) {
 }
 
 async function main() {
-  core.setOutput("major-release-tag", majorReleaseTag);
-  core.setOutput("minor-release-tag", minorReleaseTag);
-  core.setOutput("patch-release-tag", patchReleaseTag);
+  core.setOutput("major-release-label", majorReleaseLabel);
+  core.setOutput("minor-release-label", minorReleaseLabel);
+  core.setOutput("patch-release-label", patchReleaseLabel);
 
   const releaseType: ReleaseType | null = await getReleaseType();
   if (!releaseType) {
     console.log(`${Color.Red}No valid label set!${RCS}`);
     console.log(
-      `${Style.Bold}Set one of those labels in order to create a new release:${RCS}\n- Major release: ${BgColor.Red}${Color.Black}${Style.Bold}${majorReleaseTag}${RCS}\n- Minor release: ${BgColor.Yellow}${Color.Black}${Style.Bold}${minorReleaseTag}${RCS}\n- Patch release: ${BgColor.Cyan}${Color.Black}${Style.Bold}${patchReleaseTag}${RCS}`
+      `${Style.Bold}Set one of those labels in order to create a new release:${RCS}\n- Major release: ${BgColor.Red}${Color.Black}${Style.Bold}${majorReleaseLabel}${RCS}\n- Minor release: ${BgColor.Yellow}${Color.Black}${Style.Bold}${minorReleaseLabel}${RCS}\n- Patch release: ${BgColor.Cyan}${Color.Black}${Style.Bold}${patchReleaseLabel}${RCS}`
     );
     return;
   }
