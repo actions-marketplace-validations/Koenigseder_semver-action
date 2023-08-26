@@ -9667,9 +9667,9 @@ const githubToken = core.getInput("github-token", { required: true });
 const baseBranch = core.getInput("base-branch");
 const semverPrefix = core.getInput("semver-prefix");
 const semverStartVersion = core.getInput("semver-start-version");
-const majorReleaseTag = core.getInput("major-release-tag");
-const minorReleaseTag = core.getInput("minor-release-tag");
-const patchReleaseTag = core.getInput("patch-release-tag");
+const majorReleaseLabel = core.getInput("major-release-label");
+const minorReleaseLabel = core.getInput("minor-release-label");
+const patchReleaseLabel = core.getInput("patch-release-label");
 const octokit = github.getOctokit(githubToken);
 const context = github.context;
 async function getReleaseType() {
@@ -9680,13 +9680,13 @@ async function getReleaseType() {
     });
     for (const label of data) {
         const labelName = label.name;
-        if (labelName === majorReleaseTag) {
+        if (labelName === majorReleaseLabel) {
             return types_1.ReleaseType.Major;
         }
-        else if (labelName === minorReleaseTag) {
+        else if (labelName === minorReleaseLabel) {
             return types_1.ReleaseType.Minor;
         }
-        else if (labelName === patchReleaseTag) {
+        else if (labelName === patchReleaseLabel) {
             return types_1.ReleaseType.Patch;
         }
     }
@@ -9734,13 +9734,13 @@ async function createNewTagAndRelease(newTag) {
     });
 }
 async function main() {
-    core.setOutput("major-release-tag", majorReleaseTag);
-    core.setOutput("minor-release-tag", minorReleaseTag);
-    core.setOutput("patch-release-tag", patchReleaseTag);
+    core.setOutput("major-release-label", majorReleaseLabel);
+    core.setOutput("minor-release-label", minorReleaseLabel);
+    core.setOutput("patch-release-label", patchReleaseLabel);
     const releaseType = await getReleaseType();
     if (!releaseType) {
         console.log(`${types_1.Color.Red}No valid label set!${types_1.RCS}`);
-        console.log(`${types_1.Style.Bold}Set one of those labels in order to create a new release:${types_1.RCS}\n- Major release: ${types_1.BgColor.Red}${types_1.Color.Black}${types_1.Style.Bold}${majorReleaseTag}${types_1.RCS}\n- Minor release: ${types_1.BgColor.Yellow}${types_1.Color.Black}${types_1.Style.Bold}${minorReleaseTag}${types_1.RCS}\n- Patch release: ${types_1.BgColor.Cyan}${types_1.Color.Black}${types_1.Style.Bold}${patchReleaseTag}${types_1.RCS}`);
+        console.log(`${types_1.Style.Bold}Set one of those labels in order to create a new release:${types_1.RCS}\n- Major release: ${types_1.BgColor.Red}${types_1.Color.Black}${types_1.Style.Bold}${majorReleaseLabel}${types_1.RCS}\n- Minor release: ${types_1.BgColor.Yellow}${types_1.Color.Black}${types_1.Style.Bold}${minorReleaseLabel}${types_1.RCS}\n- Patch release: ${types_1.BgColor.Cyan}${types_1.Color.Black}${types_1.Style.Bold}${patchReleaseLabel}${types_1.RCS}`);
         return;
     }
     const latestReleaseTag = await getLatestReleaseTag();
